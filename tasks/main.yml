@@ -1,0 +1,16 @@
+---
+- name: Ensure hosts are in known_hosts
+  delegate_to: localhost
+  auth_keys:
+    servers: "{{ hostvars[inventory_hostname]['ansible_host'] | default(inventory_hostname) }}"
+  register: auth_keys_changed
+
+- name: Notify if known_hosts was changed
+  debug:
+    msg: "SSH Known Hosts was changed. This should only happen if your server has a new OS installation. Make sure this is what you want!"
+  when: auth_keys_changed | changed
+
+- name: Pause after notify if known_hosts was changed
+  pause:
+    seconds: 30
+  when: auth_keys_changed | changed
